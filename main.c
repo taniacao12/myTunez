@@ -40,36 +40,43 @@ int main() {
 	printf("====================================\n\nTesting free_list:\n");
 	free_list(list);
 
-	printf("====================================\n\nMUSIC LIBRARY TESTS\n\n");
+	printf("\n====================================\n\nMUSIC LIBRARY TESTS\n\n");
+	
+	add("flower road", "big bang");
+	add("love scenario", "ikon");
+	add("bang bang bang", "big bang");
+	add("forever young", "blackpink");
+	add("like the seasons", "exid");
+	add("stay", "blackpink");
 
 	printf("====================================\n\nTesting print_library:\n");
-	print_library(list);
+	print_library();
 
 	printf("====================================\n\nTesting print_letter:\n");
-	print_letter();
+	print_letter('b');
+	print_letter('e');
 
-	printf("====================================\n\nTesting find_song:\n");
-	print_list(find_song(list, "Love Scenario", "iKON"));
-	print_list(find_song(list, "My Type", "iKON"));
+	printf("====================================\n\nTesting find_tune:\n");
+	print_node(find_tune("love scenario", "ikon"));
+	//print_node(find_tune("my type", "ikon"));
 
-	printf("====================================\n\nTesting find_artist:\n");
-	print_list(find(list, "EXID"));
-	print_list(find(list, "KARD"));
+	printf("====================================\n\nTesting find_musician:\n");
+	print_node(find_musician("exid"));
+	//print_node(find_musician("kard"));
 
 	printf("====================================\n\nTesting remove_song:\n");
-	print_list(list = remove_song(list, "Bang Bang Bang", "Big Bang"));
-	print_list(list = remove_song(list, "Hola Hola", "KARD"));
+	delete("bang bang bang", "big bang");
+	delete("hola hola", "kard");
 
 	printf("====================================\n\nTesting clear_library:\n");
-	clear_library(list);
+	clear_library();
 
 	printf("====================================\n\nTesting print_artist:\n");
-	print_list(print_artist(list, "EXID"));
-	print_list(print_artist(list, "KARD"));
+	print_artist("exid");
+	print_artist("kard");
 
 	printf("====================================\n\nTesting shuffle:\n");
-	print_node(shuffle(list));
-	print_node(shuffle(list));
+	shuffle();
 
 	return 0;
 }

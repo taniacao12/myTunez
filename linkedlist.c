@@ -18,7 +18,7 @@ void print_list (struct node *list) {
   }
 }
 
-// find and return a pointer to a node based on artist and song name
+// find and return a pointer to the first song of an artist based on artist name
 struct node * find_artist(struct node *list, char *art) {
   	printf("looking for [%s]\n", art);
 	while (list) {
@@ -32,7 +32,7 @@ struct node * find_artist(struct node *list, char *art) {
 	return NULL;
 }
 
-// find and return a pointer to the first song of an artist based on artist name
+// find and return a pointer to a node based on artist and song name
 struct node * find_song(struct node *list, char *song, char *art) {
   	printf("looking for [%s: %s]\n", art, song);
   	while (list) {
