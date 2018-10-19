@@ -1,124 +1,159 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "linkedlist.h"
+
+// print current node
+void print_node (struct node *list) {
+	printf("| %s: %s ", list->artist, list->name);
+	printf("\n");
+}
 
 // print the entire list
 void print_list (struct node *list) {
-	printf("LINKLIST: ");
-	while (list) {
-		printf("|%s: %s ", list->artist, list->name);
-		list = list->next;
-	}
+  while (list) {
+	print_node(list);
+    list = list->next;
+  }
 }
 
 // find and return a pointer to a node based on artist and song name
-void find_node (struct node *list, char art) {
+struct node * find_artist(struct node *list, char *art) {
+  	printf("looking for [%s]\n", art);
 	while (list) {
-		if (*(list->artist) == art) {
-			printf("node found\n");
-			break;
+		if (strcmp(list->artist, art) == 0) {
+		  	printf("artist found\n");
+			return list;
 		}
-		list = list->next;
-	}
-	printf("node not found\n");	
+    	list = list->next;
+  	}
+  	printf("artist not found\n");
+	return NULL;
 }
 
 // find and return a pointer to the first song of an artist based on artist name
-void find_song (struct node *list, char song, char art) {
+struct node * find_song(struct node *list, char *song, char *art) {
+  	printf("looking for [%s: %s]\n", art, song);
+  	while (list) {
+    	if (strcmp(list->artist, art) == 0 && strcmp(list->name, song) == 0) {
+		  	printf("song found\n");
+			return list;
+		}
+      	list = list->next;
+  	}
+	printf("song not found\n");
+	return NULL;
+}
+
+// return the length of the list
+int get_length (struct node *list) {
+	int length = 0;
 	while (list) {
-		if (*list->artist == art)
-			if (*list->name == song) {
-				printf("node found\n");
-				break;
-			}
 		list = list->next;
+		length++;
 	}
-	printf("node not found\n");
+	return length; 
 }
 
 // return a pointer to random element in the list
-struct node * get_random (struct node * list) {
-	int num = rand() % sizeof(list);
-	int i = 0;
-	while (i < num) {
-		list = list->next;
-		i++;
+struct node * get_random (struct node *list) {
+	if (list) {
+		int len = get_length(list);
+		int num = rand() % len;
+		while (num) {
+   			list = list->next;
+   		 	num--;
+		}
+		return list;
 	}
-	return list;
+	return NULL;
 }
 
 // insert node at the front
-struct node * insert_front (struct node *list, char song, char art) {
-	struct node *new;
-	new = malloc(sizeof(struct node));
-	*new->name = song;
-	*new->artist = art;
-	new->next = list;
-	list = new;
-	return list;
-}
-
-// insert node at the back
-struct node * insert_back (struct node *list, char song, char art) {
-	struct node *temp;
-	temp = malloc(sizeof(struct node));
-	while (list) {
-		temp = insert_front(list, *list->name, *list->artist);
-		list = list->next;
-	}
-	struct node *new;
-	new = malloc(sizeof(struct node));
-	*new->name = song;
-	*new->artist = art;
-	new->next = NULL;
-	while (temp) {
-		new = insert_front(temp, *temp->name, *temp->artist);
-		temp = temp->next;
-	}
-	list = new;
-	return list;
+struct node * insert_front (struct node *list, char *song, char *art) {
+  struct node *new = malloc(sizeof(struct node));
+  strcpy(new->name, song);
+  strcpy(new->artist, art);
+  new->next = list;
+  return new;
 }
 
 // insert nodes in order (alphabetical by Artist then by Song)
-struct node * insert_order (struct node *list, char song, char art){
-	if (!list || (strcmp(list->artist, art) > 0 && strcmp(list->name, song) > 0))
-		return insert_front(list, song, art);
-	struct node *next;
-	next = list->next;
-	//while (list && list->next && strcmp(list->artist, art) <= 0 && strcmp(list->name, song) < 0) {
-	while (list && strcmp(list->artist, art) <= 0 && strcmp(list->name, song) < 0) {		list = list->next;
-		next = list->next;
+struct node * insert_order (struct node *list, char *song, char *art) {
+	if (list) {
+		struct node *new = malloc(sizeof(struct node));
+	 	strcpy(new->name, song);
+  		strcpy(new->artist, art);
+		if (list->next) {
+			struct node *head = list;
+			struct node *next = list->next;
+			if (strcmp(head->artist, art) == 0 && strcmp(head->name, song) > 0)
+				return insert_front(list, song, art);
+			while (strcmp(next->artist, art) < 0) {
+				head = head->next;
+				next = head->next;
+			}
+			if (strcmp(next->artist, art) > 0) {
+				next = insert_front(next, song, art);
+				head->next = next;
+				return list;
+			}
+			else if (strcmp(next->artist, art) == 0) {
+				while (next && strcmp(next->artist, art) == 0 && strcmp(next->name, song) < 0) {
+					head = head->next;
+					next = head->next;
+				}
+				next = insert_front(next, song, art);
+				head->next = next;
+				return list;
+			}
+		}
+		list->next = new;
+		return list;
 	}
-	list = list->next;
-	*list->name = song;
-	*list->artist = art;
-	list->next = next;
-	return list;
+	return insert_front(list, song, art);
 }
 
 // remove a single specified node from the list
-struct node * remove_node (struct node *list, char song, char art){
-	struct node *next;
-	while (list) {
-		if (*list->artist == art)
-			if (*list->name == song)
-				break;
+struct node * remove_node (struct node *list, char *song, char *art) {
+  	printf("removing [%s: %s]\n", art, song);
+  	struct node *head = list;
+	if (list && strcmp(list->artist, art) == 0 && strcmp(list->name, song) == 0) {
 		list = list->next;
+		free(head);
+		return list;
 	}
-	next = list->next;
-	free(list);
-	list = next;
+	struct node *prev= list;
+	struct node *temp= list;
+	while (temp) {
+    	if (strcmp(temp->artist, art) == 0 && strcmp(temp->name, song) == 0) {
+			if (temp) {
+				if (!temp->next) {
+					prev->next = NULL;
+					free(temp);
+					temp = NULL;
+				}
+				prev->next = temp->next;
+				return list;
+			}
+		}
+		prev = temp;
+		temp = temp->next;
+  	}
+	printf("[%s: %s] not found\n", art, song);
 	return list;
 }
 
 // free the entire list
 struct node * free_list (struct node *list) {
 	struct node *next;
-	while (list) {
-    	next = list->next;
-    	free(list);
+  	while (list) {
+		printf("freeing node: %s - %s \n", list->artist, list->name);	
+  	  	next = list->next;
+   		free(list);
     	list = next;
-	}
-	return list;
+  	}
+	printf("list after free_list:\n");
+	return NULL;
 }
